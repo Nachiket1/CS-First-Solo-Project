@@ -1,0 +1,221 @@
+<DOCTYPE html>
+
+<html>
+  <head>
+    <title>What's Getting DONE TODAY?</title>
+  </head>
+
+  <style>
+    
+    button {
+      background-color: rgba(200, 250, 250, 0.3);
+      width:100px;
+      height:20px;
+      border: rgba(40, 255, 184, 0.5);
+      /* border-radius: 200%; */
+      color: grey;
+      /* padding: 10px 22px; */
+      text-align: center;
+      text-decoration: blue;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+  
+
+  </style>
+  
+  <body>
+
+    <!-- All the HTML elements that we need to show up on the page: -->
+    <!-- Disabled in version 10: <button id='display-button'>Display</button> -->
+
+    <button id='toggle-all-button'>Toggle All</button>
+
+    <button id='add-button'>Add Task</button>
+    <input id='add-input'><br>
+
+    <!-- Disabled in version 12: 
+    <button id='edit-button'>Edit</button>
+    <input id='edit-position-input'>
+    <input id='edit-text-input'><br>
+    -->
+
+    <!-- Disabled in version 11: 
+    <button id='toggle-button'>Toggle</button>
+    <input id='toggle-position-input'><br>
+    -->
+
+    <!-- Disabled in version 10: 
+    <button id='remove-button'>Remove</button>
+    <input id='remove-input'><br> 
+    -->
+    
+    <ol id='todos-ol'>
+      
+    </ol>
+
+    <!-- JS follows -->
+    <script>
+      
+      let todos = [ 
+        {todoText: 'Swim', completed: false}, 
+        {todoText: 'Yoga', completed: false}, 
+        {todoText: 'Rowing', completed: false}, 
+        {todoText: 'Weights', completed: false} 
+      ];
+
+      function display(){                             
+        let todosOl = document.getElementById('todos-ol');
+        todosOl.innerHTML = ''; 
+
+        for (let i = 0; i < todos.length; i++){
+          let todoLi = document.createElement('li');
+
+          if (todos[i].completed === true) todoLi.innerText = '[X] ' + todos[i].todoText;
+           else todoLi.innerText = '[] ' + todos[i].todoText;
+
+          // Version 12: Create an edit button for each todo:
+          const editButton = document.createElement('button');
+          editButton.innerText = 'Edit';  
+          editButton.addEventListener('click', edit); // Adding the event listener
+          editButton.id = 'edit-' + i;  // Storing the position on edit button
+          
+          // Version 10: create a remove button for each todo:
+          const removeButton = document.createElement('button');
+          removeButton.innerText = 'Remove';
+          removeButton.addEventListener('click', remove); // Adding the event listener
+          // removeButton.id = i;   // Version 11 changed this to: 
+          removeButton.id = 'remove-' + i;  // Storing the position on remove button
+
+          // Version 11: 
+          const toggleButton = document.createElement('button');
+          toggleButton.innerText = 'Toggle';
+          toggleButton.addEventListener('click', toggle); // Adding the event listener
+          toggleButton.id = 'remove-' + i;;  // Storing the position on toggleButton
+
+          todoLi.appendChild(editButton);
+          todoLi.appendChild(toggleButton);
+          todoLi.appendChild(removeButton);
+          todosOl.appendChild(todoLi);
+          }
+      }
+
+      display();
+
+      function add() {                           
+        let initTodoText = addInput.value;
+        const object = {todoText: initTodoText, completed: false}
+        if (object.todoText.length !== 0) todos.push(object);
+        addInput.value = '';
+        display();
+      }
+
+      /* Updated in version 12: updates below prior edit function
+      function edit() {  
+        let position = editPositionInput.value;
+        let newTodoText = editTextInput.value;
+        todos[position].todoText = newTodoText;
+        editPositionInput.value = '';
+        editTextInput.value = '';
+        display();
+      }
+      */
+
+      function edit(event){   // Version 12 updates
+        let position = event.currentTarget.id.split('-')[1];
+        let newTodoText = prompt('Edit this task');
+
+        // if (newTodoText[0] !== undefined) todos[position].todoText = newTodoText;
+        if (newTodoText.length !== 0) todos[position].todoText = newTodoText;
+
+        display();
+      }
+
+      /* Disabled in Version 10: old remove function disabled:
+      function remove(){   
+        let position = removeInput.value;                    
+        todos.splice(position, 1);
+        removeInput.value = '';
+        display();
+      }
+      */
+
+      // Version 10: new remove function added
+      function remove(event){
+        /*  The following are candidates for enabling functionality for our remove button:
+        event.toElement (no documentation), event.target, event.currentTarget, event.srcElement (avoid, says documentation)
+        */
+        let position = event.currentTarget.id.split('-')[1];
+        todos.splice(position, 1);
+        display();
+      }
+      
+      function toggle(event){
+        // let position = event.currentTarget.id; // Version 11 changed this to:
+        let position = event.currentTarget.id.split('-')[1];
+        // let position = toggleInput.value;    // Disabled in version 11
+        if (todos[position].completed === false) todos[position].completed = true;
+          else todos[position].completed = false;
+
+        // Unnecessary in version 11: toggleInput.value = '';
+          display();
+      }
+      
+      function toggleAll(){
+        let completed = 0;
+
+        for (const task of todos) {
+          if (task.completed === true) completed++;
+        }
+        
+        if (completed === todos.length){
+          for (const task of todos){
+            task.completed = false;
+          }
+        } else {
+          for (const task of todos){
+            task.completed = true;
+          }
+        }
+        display();
+      }
+
+      /*
+      Disabled in version 10:
+      const displayButton = document.getElementById('display-button');
+      displayButton.addEventListener('click', display);
+      */
+
+      const toggleAllButton = document.getElementById('toggle-all-button');
+      toggleAllButton.addEventListener('click', toggleAll);
+
+      /* Disabled in version 11: 
+      const toggleButton = document.getElementById('toggle-button');
+      const togglePositionInput = document.getElementById('toggle-position-input');
+      toggleButton.addEventListener('click', toggle);
+      */
+
+      const addButton = document.getElementById('add-button');
+      const addInput = document.getElementById('add-input');
+      addButton.addEventListener('click', add);
+
+      /* Disabled in version 12: 
+      const editButton = document.getElementById('edit-button');
+      const editPositionInput = document.getElementById('edit-position-input');
+      const editTextInput = document.getElementById('edit-text-input');
+      editButton.addEventListener('click', edit);
+      */
+
+      /* Disabled in version 10: 
+      const removeButton = document.getElementById('remove-button');
+      const removeInput = document.getElementById('remove-input');
+      removeButton.addEventListener('click', remove);
+      */
+
+    </script>
+
+  </body>
+
+</html>
