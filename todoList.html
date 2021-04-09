@@ -72,9 +72,7 @@
       function edit(event){ 
         let position = event.currentTarget.id.split('-')[1];
         let newTodoText = prompt('Edit this task');
-
         if (newTodoText.length !== 0) todos[position].todoText = newTodoText;
-
         display();
       }
 
@@ -89,7 +87,7 @@
         if (todos[position].completed === false) todos[position].completed = true;
           else todos[position].completed = false;
 
-          display();
+        display();
       }
       
       function toggleAll(){
